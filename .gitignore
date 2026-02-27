@@ -1,2 +1,3 @@
 tmp/
+cmd/vtt/input.wav
 *.wav (or only under tmp/)
