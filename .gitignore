@@ -1,3 +1,27 @@
-tmp/
+# --- Local Audio Files ---
+# Ignore the specific test file in your cmd folder
 cmd/vtt/input.wav
-*.wav (or only under tmp/)
+
+# Ignore any wav files generated during runs anywhere in the project
+*.wav
+
+# If you decide to keep all recordings in a dedicated tmp folder
+tmp/
+
+# --- Whisper Submodule Binaries ---
+# These are compiled for your specific OS and shouldn't be committed
+third_party/whisper/main
+third_party/whisper/server
+third_party/whisper/quantize
+
+# --- Whisper Models ---
+# These are giant files (150MB+) and should stay local
+third_party/whisper/models/*.bin
+
+# --- Go Specifics ---
+# Binaries produced by 'go build'
+vtt
+*.exe
+
+# Dependency folders
+vendor/
