@@ -9,9 +9,10 @@ import (
 
 // Define paths relative to the project root
 const (
-	whisperBin   = "./third_party/whisper/build/bin/whisper-cli"
-	whisperModel = "./third_party/whisper/models/ggml-base.en.bin"
-	outputFile   = "cmd/vtt/input.wav"
+	whisperBin      = "./third_party/whisper/build/bin/whisper-cli"
+	whisperModel    = "./third_party/whisper/models/ggml-base.en.bin"
+	inputWavFile    = "cmd/vtt/input.wav"
+	outputTextFile  = "output.txt"
 )
 
 func StartRecordingAudio() {
@@ -22,7 +23,7 @@ func StartRecordingAudio() {
 	}
 
 	// -ar 16000 is vital for Whisper
-	cmd := exec.Command("ffmpeg", "-y", "-f", "avfoundation", "-i", ":0", "-ar", "16000", "-ac", "1", outputFile)
+	cmd := exec.Command("ffmpeg", "-y", "-f", "avfoundation", "-i", ":0", "-ar", "16000", "-ac", "1", inputWavFile)
 
 	fmt.Println("Recording... Press ENTER to stop.")
 	if err := cmd.Start(); err != nil {
@@ -34,7 +35,7 @@ func StartRecordingAudio() {
 
 	cmd.Process.Signal(os.Interrupt)
 	cmd.Wait()
-	fmt.Printf("Finished recording. Saved to: %s\n", outputFile)
+	fmt.Printf("Finished recording. Saved to: %s\n", inputWavFile)
 }
 
 func TranscribeAudio() {
@@ -42,7 +43,7 @@ func TranscribeAudio() {
 
 	// -nt: no timestamps
 	// -np: no prints (results only)
-	cmd := exec.Command(whisperBin, "-m", whisperModel, "-f", outputFile, "-nt", "-np")
+	cmd := exec.Command(whisperBin, "-m", whisperModel, "-f", inputWavFile, "-nt", "-np")
 
 	out, err := cmd.Output()
 	if err != nil {
@@ -52,6 +53,12 @@ func TranscribeAudio() {
 
 	text := strings.TrimSpace(string(out))
 	fmt.Printf("\n--- TRANSCRIPTION ---\n%s\n---------------------\n", text)
+
+	if err := os.WriteFile(outputTextFile, []byte(text+"\n"), 0644); err != nil {
+		fmt.Printf("Failed to write %s: %v\n", outputTextFile, err)
+	} else {
+		fmt.Printf("Output written to: %s\n", outputTextFile)
+	}
 }
 
 func main() {
