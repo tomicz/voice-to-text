@@ -1,6 +1,7 @@
 # --- Local Audio Files ---
 # Ignore the specific test file in your cmd folder
 cmd/vtt/input.wav
+output.txt
 
 # Ignore any wav files generated during runs anywhere in the project
 *.wav
