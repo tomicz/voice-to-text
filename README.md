@@ -41,19 +41,24 @@ Record audio from your microphone and transcribe it to text using [whisper.cpp](
 
 3. **Download a Whisper model**
 
-   The app expects the English base model at:
+   The app expects the **large-v3-turbo** model by default at:
 
-   `third_party/whisper/models/ggml-base.en.bin`
+   `third_party/whisper/models/ggml-large-v3-turbo.bin`
 
-   From the whisper.cpp repo you can use their script, or download manually, for example:
+   Download it using the whisper.cpp script (from project root):
 
    ```bash
    mkdir -p third_party/whisper/models
-   curl -L -o third_party/whisper/models/ggml-base.en.bin \
-     https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin
+   third_party/whisper/models/download-ggml-model.sh large-v3-turbo third_party/whisper/models
    ```
 
-   Model files are large (e.g. 150MB+); they are gitignored.
+   **Other models:** You can use a different model by setting `WHISPER_MODEL`, e.g. for the smaller English base model:
+
+   `third_party/whisper/models/ggml-base.en.bin`
+
+   Model files are large (large-v3-turbo is ~1.5 GB); they are gitignored.
+
+   **Lighter option:** For a smaller/faster model, use e.g. `ggml-base.en.bin` or `ggml-small.en.bin` and set `WHISPER_MODEL` accordingly.
 
 ## Usage
 
@@ -84,5 +89,5 @@ Recordings and generated `.wav` files are gitignored.
 
 ## How it works
 
-- **Recording:** ffmpeg captures from the default system microphone (`:0`) with AVFoundation. Output is 16 kHz, mono, which matches Whisper’s expected input.
-- **Transcription:** The saved WAV is passed to `whisper-cli` with the base English model. The `-nt` and `-np` flags restrict output to the transcribed text only.
+- **Recording:** ffmpeg captures from the default system microphone (`:0`) with AVFoundation, applies light noise reduction, and outputs 16 kHz mono for Whisper.
+- **Transcription:** The saved WAV is passed to `whisper-cli` with `-sns` (suppress non-speech tokens) and `-l en` for cleaner English output.

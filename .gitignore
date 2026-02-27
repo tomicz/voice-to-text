@@ -21,7 +21,7 @@ third_party/whisper/models/*.bin
 
 # --- Go Specifics ---
 # Binaries produced by 'go build'
-vtt
+/vtt
 *.exe
 
 # Dependency folders
